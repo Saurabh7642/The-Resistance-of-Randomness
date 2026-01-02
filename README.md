@@ -3,139 +3,139 @@
 
 ---
 
-## Introduction
+## 1. Introduction
 
-This project, **The Resistance of Randomness**, studies a deep and
-counterintuitive connection between two seemingly unrelated systems:
-**random walks in probability theory** and **electrical circuits in classical
-physics**.
+This project, **The Resistance of Randomness**, explores a deep mathematical
+connection between two seemingly unrelated systems: **random walks on graphs**
+and **electrical resistor networks**.
 
-A random walk describes the motion of a particle (or agent) that moves
-unpredictably across a network. Such processes arise naturally in Markov
-chains, graph algorithms, diffusion models, and financial time series.
-At first glance, quantities like *hitting time* or *commute time* appear
-inherently stochastic and difficult to compute exactly.
+Random walks are a fundamental model for uncertainty and diffusion. A walker
+moves step by step across a graph, choosing its next position randomly from
+the available neighbors. Quantities such as how long it takes to reach a
+target, or how long a round trip between two nodes takes on average, appear
+inherently stochastic and difficult to analyze exactly.
 
-Electrical circuits, on the other hand, are governed by deterministic physical
-laws such as **Ohm’s Law** and **Kirchhoff’s Current Law**.
+Electrical circuits, in contrast, are governed by deterministic physical laws
+such as Ohm’s Law and Kirchhoff’s Current Law.
 
-The central insight of this project is that these two systems are
-**mathematically equivalent**.
-
-By treating a graph as an electrical network—where vertices act as circuit
-nodes and edges act as unit resistors—we can compute probabilistic quantities
-of random walks using standard tools from circuit theory and linear algebra.
-In particular, expected hitting times correspond exactly to nodal voltages
-in an equivalent resistive network.
-
-This perspective allows us to replace noisy Monte Carlo estimation with
-precise analytical computation using the **graph Laplacian**.
-
-From a quantitative research and HFT perspective, this framework is highly
-relevant. Many problems in finance—such as first-passage times, signal decay,
-liquidity flow, and risk propagation—can be modeled as random processes on
-networks. Understanding when randomness hides deterministic structure is a
-core modeling skill.
+The central idea of this project is that these two systems are, in fact,
+**mathematically equivalent**. By treating a graph as an electrical network,
+we can compute probabilistic quantities of random walks using linear algebra
+and classical circuit theory.
 
 ---
 
-## Core Result: Probability–Physics Duality
+## 2. Overview of the Core Idea
 
-The main result explored and verified in this project is the **Commute Time
-Identity**:
+The key observation is the following correspondence:
 
-$$
-C_{uv} = 2m \cdot R_{uv}
-$$
+- Graph vertices correspond to circuit nodes  
+- Graph edges correspond to resistors of unit resistance  
+- Expected hitting times correspond to node voltages  
 
-where:
+Under this interpretation, quantities from probability theory can be computed
+by solving a deterministic system of linear equations involving the
+**graph Laplacian**.
 
-- \( C_{uv} \) is the expected number of steps for a random walk to travel from
-  node \( u \) to node \( v \) and return,
-- \( m \) is the total number of edges in the graph,
-- \( R_{uv} \) is the effective electrical resistance between nodes \( u \) and
-  \( v \) when each edge is treated as a 1Ω resistor.
-
-This identity shows that a fundamentally stochastic quantity can be computed
-via a deterministic linear system.
+This transformation allows random walk behavior to be analyzed without relying
+solely on simulation.
 
 ---
 
-## Stochastic Formulation: Random Walks on Graphs
+## 3. Random Walk Formulation
 
 Consider an undirected graph \( G = (V, E) \).
 
 A simple random walk evolves as follows:
-- At each step, the walker moves from its current node to a uniformly random
-  neighboring node.
-- If a node \( x_i \) has degree \( d_i \), each neighbor is chosen with
-  probability \( 1 / d_i \).
+- At each step, the walker moves from its current node to one of its neighbors.
+- Each neighbor is chosen uniformly at random.
 
-### Hitting Time
-
-Let \( H_{uv} \) denote the **hitting time**, defined as the expected number of
-steps required for a random walk starting at node \( u \) to reach node \( v \).
-
-Let \( E[x_i] \) be the expected number of steps to reach \( v \) starting from
-node \( x_i \). For any node \( x_i \neq v \):
-
-$$
-E[x_i] = \frac{1}{d_i} \sum_{(x_i, x_j) \in E} E[x_j] + 1
-$$
-
-with boundary condition:
-
-$$
-E[v] = 0
-$$
-
-This system of linear equations fully characterizes the hitting time.
-
-### Commute Time
-
-The **commute time** between nodes \( u \) and \( v \) is defined as:
-
-$$
-C_{uv} = H_{uv} + H_{vu}
-$$
-
-It represents the expected number of steps for a round trip from \( u \) to
-\( v \) and back.
+If a node \( x_i \) has degree \( d_i \), then each neighbor is chosen with
+probability \( 1 / d_i \).
 
 ---
 
-## Physical Formulation: Electric Circuits
+### 3.1 Hitting Time
 
-We now reinterpret the same graph as an electrical network:
+The **hitting time** from node \( u \) to node \( v \) is defined as the expected
+number of steps required for a random walk starting at \( u \) to reach \( v \)
+for the first time.
 
-- Each edge is replaced by a resistor of resistance 1Ω,
-- Each vertex becomes a circuit node with voltage \( V_i \),
-- External currents \( I_i \) are injected at nodes.
+Let \( E(x_i) \) denote the expected number of steps required to reach the
+target node \( v \) starting from node \( x_i \).
 
-By Kirchhoff’s Current Law, the nodal equation is:
+For any node \( x_i \neq v \), the expectation satisfies the recurrence:
+
+$$
+E(x_i) = \frac{1}{d_i} \sum_{(x_i, x_j) \in E} E(x_j) + 1
+$$
+
+The boundary condition is:
+
+$$
+E(v) = 0
+$$
+
+This system of equations fully determines the hitting times.
+
+---
+
+### 3.2 Commute Time
+
+The **commute time** between nodes \( u \) and \( v \) is defined as the expected
+number of steps for a round trip:
+
+$$
+C(u, v) = H(u, v) + H(v, u)
+$$
+
+where:
+- \( H(u, v) \) is the hitting time from \( u \) to \( v \),
+- \( H(v, u) \) is the hitting time from \( v \) to \( u \).
+
+---
+
+## 4. Electrical Circuit Interpretation
+
+We now reinterpret the same graph as an electrical circuit:
+
+- Each edge is replaced by a resistor of resistance 1 ohm  
+- Each vertex becomes a node in the circuit  
+- Each node is assigned a voltage \( V_i \)  
+
+According to Kirchhoff’s Current Law, the total current leaving a node must
+equal the externally injected current at that node.
+
+This leads to the nodal equation:
 
 $$
 d_i V_i - \sum_{(x_i, x_j) \in E} V_j = I_i
 $$
 
+where \( I_i \) denotes the external current injected at node \( i \).
+
 ---
 
-## Establishing the Equivalence
+## 5. Establishing the Equivalence
 
-The random walk equations and circuit equations become identical if we make
+The random walk equations and the circuit equations become identical if we make
 the identification:
 
 $$
-V_i = E[x_i]
+V_i = E(x_i)
 $$
 
-and choose external currents:
+and choose the injected currents as:
 
 $$
-I_i = d_i \quad \text{for all } i \neq v
+I_i = d_i \quad \text{for all nodes except the target}
 $$
 
-Current conservation implies that the total injected current equals:
+With this choice, the equations governing voltages exactly match the equations
+governing expected hitting times.
+
+Because the sum of all node degrees in a graph equals twice the number of
+edges, the total injected current satisfies:
 
 $$
 \sum_i d_i = 2m
@@ -143,103 +143,91 @@ $$
 
 where \( m \) is the number of edges in the graph.
 
-Thus, expected hitting times are exactly equal to node voltages in the
-corresponding electrical network.
-
 ---
 
-## Uniqueness and the Graph Laplacian
+## 6. The Graph Laplacian and Uniqueness
 
-The system can be written compactly as:
+The system of equations can be written compactly as:
 
 $$
 L V = I
 $$
 
-where \( L = D - A \) is the **graph Laplacian**.
+where \( L = D - A \) is the **graph Laplacian**, with \( D \) the degree matrix
+and \( A \) the adjacency matrix.
 
-Because the Laplacian is singular (voltages are defined only up to an additive
-constant), one node is *grounded* by fixing its voltage to zero. This removes
-the ambiguity and guarantees a unique solution.
+The Laplacian matrix is singular, reflecting the fact that voltages are defined
+only up to an additive constant. To obtain a unique solution, one node is
+**grounded** by fixing its voltage to zero.
 
----
-
-## Deriving the Commute Time Identity
-
-To compute the commute time, two circuit configurations are considered:
-
-1. A circuit grounded at node \( v \), yielding \( H_{uv} \)
-2. A circuit grounded at node \( u \), yielding \( H_{vu} \)
-
-By reversing currents in the second circuit and applying the superposition
-principle, currents cancel at all intermediate nodes. The resulting circuit
-has a net current of \( 2m \) flowing from \( u \) to \( v \).
-
-By Ohm’s Law:
-
-$$
-V_u - V_v = I \cdot R_{uv}
-$$
-
-which directly yields:
-
-$$
-C_{uv} = 2m \cdot R_{uv}
-$$
+This removes the ambiguity and ensures a well-defined solution.
 
 ---
 
-## Experimental Validation
+## 7. Derivation of the Commute Time Identity
 
-The theory is validated using Monte Carlo simulation of random walks on a
-fixed graph with \( m = 10 \) edges, along with a deterministic computation
-of effective resistance using the graph Laplacian.
+To derive the commute time, two circuit configurations are considered:
+
+1. A circuit grounded at node \( v \), yielding the hitting time from \( u \) to \( v \)
+2. A circuit grounded at node \( u \), yielding the hitting time from \( v \) to \( u \)
+
+By reversing the currents in the second circuit and applying the superposition
+principle, currents cancel at all intermediate nodes. The resulting circuit has
+a net current of \( 2m \) flowing from \( u \) to \( v \).
+
+By Ohm’s Law, the voltage difference satisfies:
+
+$$
+V_u - V_v = I \cdot R(u, v)
+$$
+
+This leads to the **commute time identity**:
+
+$$
+C(u, v) = 2m \cdot R(u, v)
+$$
+
+where \( R(u, v) \) is the effective electrical resistance between nodes
+\( u \) and \( v \).
+
+---
+
+## 8. Experimental Validation
+
+The theoretical results are validated using Monte Carlo simulation of random
+walks on a fixed graph with \( m = 10 \) edges, along with a deterministic
+computation of effective resistance using the Laplacian matrix.
 
 ### Numerical Results
 
 | Quantity | Value |
 |--------|-------|
-| Hitting Time \( H_{uv} \) | ~13.78 steps |
-| Hitting Time \( H_{vu} \) | ~7.68 steps |
-| Simulated Commute Time | ~21.46 steps |
-| Effective Resistance \( R_{uv} \) | ~1.0652 Ω |
-| Theoretical \( 2mR_{uv} \) | ~21.30 steps |
+| Hitting time from U to V | ~13.78 steps |
+| Hitting time from V to U | ~7.68 steps |
+| Simulated commute time | ~21.46 steps |
+| Effective resistance | ~1.0652 ohms |
+| Theoretical commute time | ~21.30 steps |
 
-The simulated commute time closely matches the theoretical prediction.
-
----
-
-## Distribution of Hitting Times
-
-The histogram of hitting times shows:
-
-- A strong concentration at small step counts,
-- A pronounced heavy tail caused by rare but long trajectories,
-- Asymmetry between \( H_{uv} \) and \( H_{vu} \) driven by graph topology and
-  degree imbalance.
-
-This highlights why analytical approaches are often preferable to pure
-simulation when studying stochastic systems with high variance.
-
-The histogram image is saved automatically in the `results/` directory.
+The simulated and theoretical commute times are in close agreement.
 
 ---
 
-## Relevance to Quantitative Research and HFT
+## 9. Distribution of Hitting Times
 
-This project connects directly to problems in quantitative finance:
+The histogram of hitting times reveals several important features:
 
-- **First-passage times** for barrier crossings,
-- **Liquidity flow** modeled as current through a network,
-- **Risk contagion** in correlation and exposure graphs,
-- **Spectral properties** of the Laplacian related to mixing and stability.
+- A strong concentration at small step counts, indicating many short paths  
+- A pronounced heavy tail caused by rare but long trajectories  
+- Asymmetry between the two directions due to local graph structure  
 
-The ability to translate stochastic dynamics into deterministic linear systems
-is a core skill in quantitative research.
+This behavior illustrates why average values alone are often insufficient to
+fully characterize random processes.
+
+The histogram generated by the simulation is saved in the `results/` directory.
 
 ---
 
-## How to Run
+## 10. How to Run
 
 ```bash
 pip install networkx numpy matplotlib
