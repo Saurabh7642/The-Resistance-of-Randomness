@@ -231,11 +231,11 @@ The theory is validated on a fixed graph with \( m = 10 \) edges.
 
 | Quantity | Value |
 |--------|-------|
-| Hitting time from U to V | ~13.78 steps |
-| Hitting time from V to U | ~7.68 steps |
-| Simulated commute time | ~21.46 steps |
-| Effective resistance | ~1.0652 ohms |
-| Theoretical commute time | ~21.30 steps |
+| Hitting time from U to V | ~7.78 steps |
+| Hitting time from V to U | ~12.50 steps |
+| Simulated commute time | ~20.28 steps |
+| Effective resistance | ~1.0217 ohms |
+| Theoretical commute time | ~20.43steps |
 
 The simulated and theoretical values are in close agreement.
 
